@@ -14,19 +14,21 @@ criterion = nn.CrossEntropyLoss()
 
 # Training loop
 def train(model,cfg, device):
+    train_losses = []
+    val_losses = []
     for epoch in range(cfg["num_epochs"]):
 
         if not os.path.isfile("data/train.npy"):
             prepare_dataset()
 
-        train_dataset = TinyStoriesDataset( 
+        train_dataset = TinyStoriesDataset(
             "data/train.npy",
-            256
+            cfg["context_length"]
         )
         
         train_loader = DataLoader(       # requests samples from the Dataset through an iterator and combines them into batches
             train_dataset,
-            batch_size=32
+            batch_size=cfg["batch_size"]
         )
         
         print(epoch)
