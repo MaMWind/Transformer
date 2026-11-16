@@ -34,7 +34,7 @@ def prepare_dataset():
     )
 
     def text_iterator():
-        for item in dataset["train"].select(range(5000)):
+        for item in dataset["train"]:
             text = item["text"].strip()
 
             if text:
@@ -66,7 +66,7 @@ def prepare_dataset():
     def encode_split(split):
         all_ids = []
 
-        for item in dataset[split].select(range(5000)):
+        for item in dataset[split]:
             text = item["text"].strip()
 
             if not text:

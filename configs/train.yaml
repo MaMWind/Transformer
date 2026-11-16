@@ -1,0 +1,17 @@
+model:
+  emb_dim: 768
+  hidden_dim: 1344
+  n_heads: 12
+  n_layers: 12
+  context_length: 1024
+  vocab_size: 32000
+
+train:
+  lr: 0.001
+  batch_size: 64
+  num_epochs: 10
+  max_iter: 20
+
+wandb:
+  project: nmt-session01
+  name: debug-run
