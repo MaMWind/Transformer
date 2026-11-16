@@ -9,22 +9,6 @@ from torch.utils.data import IterableDataset, DataLoader
 import os.path
 
 
-def get_args():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--lr",type=float, default=0.001)
-    parser.add_argument("--epochs",type=int, default=10)
-    parser.add_argument("--vocab",type=int, default=32000)
-    parser.add_argument("--context",type=int, default=2048)
-    parser.add_argument("--emb_dim",type=int, default=512)   # this has to be divisible by the number of attention heads
-    parser.add_argument("--n_heads",type=int, default=8)
-    parser.add_argument("--n_layers",type=int, default=8)
-    parser.add_argument("--hidden_dim",type=int, default=1344)   #(8/3) * emb_dim rounded to a multiple of 64
-    parser.add_argument("--max_iter", type=int, default=-1)
-    parser.add_argument("--subset", type=int)
-    return parser.parse_args()
-
-
 # Loss function
 criterion = nn.CrossEntropyLoss()
 
