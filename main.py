@@ -9,11 +9,10 @@ Usage:
 
 import argparse
 import yaml
-import wandb
+import torch
 
 from src.model import build_model
 from src.train import train
-from src.evaluate import evaluate
 
 
 def load_config(path: str) -> dict:
@@ -27,23 +26,14 @@ def main():
     args = parser.parse_args()
 
     cfg = load_config(args.config)
-    set_seed(cfg["training"]["seed"])
-    device = get_device(cfg["training"]["device"])
 
-    wandb.init(
-        project=cfg["wandb"]["project"],
-        name=cfg["wandb"]["name"],
-        config=cfg,
-    )
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = build_model(cfg["model"]).to(device)
-    print(f"Model parameters: {model.count_parameters:,}")
+    print(f"Model parameters: {model.count_parameters()}")
 
-    train(model, cfg, device)
-    evaluate(model, cfg, device)
-
-    wandb.finish()
-
+    train(model, cfg["train"], device)
+    torch.save(model.state_dict(), "model.pth")
 
 if __name__ == "__main__":
     main()

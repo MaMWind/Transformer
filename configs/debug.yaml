@@ -1,0 +1,21 @@
+# configs/debug.yaml
+# Fast CPU run — always test with this before submitting a GPU job.
+# Should complete in under 60 seconds.
+
+model:
+  emb_dim: 512
+  hidden_dim: 1344
+  n_heads: 8
+  n_layers: 8
+  context_length: 2048
+  vocab_size: 32000
+
+train:
+  lr: 0.001
+  batch_size: 64
+  num_epochs: 10
+  max_iter: -1
+
+wandb:
+  project: nmt-session01
+  name: debug-run

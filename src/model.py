@@ -3,10 +3,10 @@ import torch.nn as nn
 
 
 class Llama2Model(nn.Module):
-    def __init__(self, cfg):
+    def __init__(self, cfg: dict):
         super().__init__()
         self.cfg = cfg
-        self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=cfg["dtype"])
+        self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"], dtype=torch.bfloat16)
         
 
         self.trf_blocks = nn.Sequential(
@@ -15,7 +15,7 @@ class Llama2Model(nn.Module):
 
         self.final_norm = RMSNorm(cfg["emb_dim"])
         
-        self.out_head = nn.Linear(cfg["emb_dim"], cfg["vocab_size"], bias=False, dtype=cfg["dtype"])
+        self.out_head = nn.Linear(cfg["emb_dim"], cfg["vocab_size"], bias=False, dtype=torch.bfloat16)
 
 
     def forward(self, in_idx):
@@ -34,6 +34,9 @@ class Llama2Model(nn.Module):
         embedding_ids = {id(self.tok_emb.weight)}
         embedding = sum(p.numel() for p in self.parameters() if id(p) in embedding_ids)
         return {"total": total, "embedding": embedding, "non_embedding": total - embedding}
+
+def build_model(cfg: dict) -> nn.Module:
+    return Llama2Model(cfg)
 
 
 
@@ -59,7 +62,7 @@ class TransformerBlock(nn.Module):
             d_out=cfg["emb_dim"],
             context_length=cfg["context_length"],
             num_heads=cfg["n_heads"],
-            dtype=cfg["dtype"]  
+            dtype=torch.bfloat16  
             
         )
         self.ff = FeedForward(cfg)
@@ -201,9 +204,9 @@ def compute_rope(x, cos, sin):
 class FeedForward(nn.Module):
     def __init__(self, cfg):
         super().__init__()
-        self.fc1 = nn.Linear(cfg["emb_dim"], cfg["hidden_dim"], dtype=cfg["dtype"], bias=False)
-        self.fc2 = nn.Linear(cfg["emb_dim"], cfg["hidden_dim"], dtype=cfg["dtype"], bias=False)
-        self.fc3 = nn.Linear(cfg["hidden_dim"], cfg["emb_dim"], dtype=cfg["dtype"], bias=False)
+        self.fc1 = nn.Linear(cfg["emb_dim"], cfg["hidden_dim"], dtype=torch.bfloat16, bias=False)
+        self.fc2 = nn.Linear(cfg["emb_dim"], cfg["hidden_dim"], dtype=torch.bfloat16, bias=False)
+        self.fc3 = nn.Linear(cfg["hidden_dim"], cfg["emb_dim"], dtype=torch.bfloat16, bias=False)
         self.silu = nn.SiLU()
 
     def forward(self, x):
