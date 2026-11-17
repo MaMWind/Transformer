@@ -10,7 +10,9 @@ train:
   lr: 0.001
   batch_size: 64
   num_epochs: 10
-  max_iter: 20
+  max_iter: 5
+  context_length: 1024
+  samples_per_epoch: 5
 
 wandb:
   project: nmt-session01

@@ -10,6 +10,7 @@ Usage:
 import argparse
 import yaml
 import torch
+import sys
 
 from src.model import build_model
 from src.train import train
@@ -23,6 +24,7 @@ def load_config(path: str) -> dict:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
+    parser.add_argument("--resume", action="store_true", help="continue from checkpoints/last.pt if it exists")
     args = parser.parse_args()
 
     cfg = load_config(args.config)
@@ -32,8 +34,12 @@ def main():
     model = build_model(cfg["model"]).to(device)
     print(f"Model parameters: {model.count_parameters()}")
 
-    train(model, cfg["train"], device)
-    torch.save(model.state_dict(), "model.pth")
+    finished = train(model,cfg["train"], device, resume=args.resume)
+
+    if finished: 
+        torch.save(model.state_dict(), "model.pth")
+    else:
+        sys.exit(85)
 
 if __name__ == "__main__":
     main()
