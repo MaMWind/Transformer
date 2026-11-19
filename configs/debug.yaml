@@ -13,6 +13,7 @@ train:
   max_iter: 5
   context_length: 1024
   samples_per_epoch: 5
+  val_samples: 5
 
 wandb:
   project: nmt-session01

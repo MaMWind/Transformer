@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import argparse
 from src.dataset import TinyStoriesDataset
@@ -14,6 +16,7 @@ import signal
 criterion = nn.CrossEntropyLoss()
 
 CHECKPOINT_PATH = "checkpoints/last.pt"
+BEST_MODEL_PATH = "checkpoints/best.pt"
 
 #
 # Pause / resume helper functions
@@ -145,5 +148,62 @@ def train(model, cfg, device, checkpoint_path=CHECKPOINT_PATH, resume=False):
             f"Loss: {average_loss:.4f}"
         )
 
+        best_val = validate(model, cfg, device, best_val, label=f"Epoch [{epoch + 1}/{cfg['num_epochs']}]")
+
         save_checkpoint(checkpoint_path, model, optimizer, epoch + 1, 0, 0.0)
     return True
+
+
+@torch.no_grad()
+def evaluate(model, cfg, device):
+    model.eval()
+
+    val_dataset = TinyStoriesDataset(
+        "data/train.npy",
+        cfg["context_length"],
+        samples_per_epoch= cfg.get("val_samples"),
+        seed=1234,
+        epoch=0,
+    )
+    
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size = cfg["batch_size"]
+    )
+
+    max_batches = cfg.get("val_batches", 100)
+    total_loss, n_samples = 0.0, 0
+
+    for b, (x,y) in enumerate(val_loader):
+        if max_batches > 0 and b>= max_batches:
+            break
+
+        x, y = x.to(device), y.to(device)
+
+        logits = model(x)
+        loss = criterion(
+            logits.reshape(-1, logits.size(-1)),
+            y.reshape(-1)
+        )
+
+        total_loss += loss.item() * x.size(0)
+        n_samples += x.size(0)
+
+    model.train()
+    return total_loss / max(n_samples, 1)
+
+def save_best_model(path, model):
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    tmp = path + ".tmp"
+    torch.save(model.state_dict(), tmp)
+    os.replace(tmp, path)
+
+def validate(model, cfg, device, best_val, label):
+    val_loss = evaluate(model, cfg, device)
+    print(f"{label} | Val loss: {val_loss:.4f}, Perplexity: {math.exp(val_loss):.2f}")
+    if val_loss < best_val:
+        best_val = val_loss
+        save_best_model(BEST_MODEL_PATH, model)
+        print(f"New best validation loss, model saved to {BEST_MODEL_PATH}")
+    return best_val
+    
