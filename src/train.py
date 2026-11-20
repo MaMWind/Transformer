@@ -34,7 +34,7 @@ class PauseRequest:
         print("\nPause requested: finishing current step and saving checkpoint...")
         self.requested = True
 
-def save_checkpoint(path, model, optimizer, epoch, it, total_loss):
+def save_checkpoint(path, model, optimizer, epoch, it, total_loss, best_val=float("inf")):
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     state = {
         "model": model.state_dict(),
@@ -42,6 +42,7 @@ def save_checkpoint(path, model, optimizer, epoch, it, total_loss):
         "epoch": epoch,
         "it": it,
         "total_loss": total_loss,
+        "best_val": best_val,
         "torch_rng": torch.get_rng_state(),
         "numpy_rng": np.random.get_state(),
     }
@@ -63,7 +64,7 @@ def load_checkpoint(path, model, optimizer, device):
     if "cuda_rng" in state and torch.cuda.is_available():
         torch.cuda.set_rng_state_all([s.cpu() for s in state["cuda_rng"]])
     print(f"Resumed form {path}: epoch {state['epoch'] + 1}, batch {state['it']}")
-    return state["epoch"], state["it"], state["total_loss"]
+    return state["epoch"], state["it"], state["total_loss"], state.get("best_val", float("inf")),
 
 
 # Training loop
@@ -73,9 +74,10 @@ def train(model, cfg, device, checkpoint_path=CHECKPOINT_PATH, resume=False):
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg["lr"])
 
     start_epoch, start_it, start_loss = 0, 0, 0.0
+    best_val = float("inf")
     if resume:
         if os.path.isfile(checkpoint_path):
-            start_epoch, start_it, start_loss = load_checkpoint(
+            start_epoch, start_it, start_loss, best_val = load_checkpoint(
                 checkpoint_path, model, optimizer, device
             )
         else:
@@ -134,12 +136,12 @@ def train(model, cfg, device, checkpoint_path=CHECKPOINT_PATH, resume=False):
             it += 1
 
             if pause.requested:
-                save_checkpoint(checkpoint_path, model,optimizer=optimizer, epoch=epoch, it=it, total_loss=total_loss)
+                save_checkpoint(checkpoint_path, model,optimizer=optimizer, epoch=epoch, it=it, total_loss=total_loss, best_val=best_val)
                 print("Training paused. Re-run with resume=True (--resume) to continue.")
                 return False
 
             if save_every > 0 and it % save_every == 0:
-                save_checkpoint(checkpoint_path, model,optimizer=optimizer, epoch=epoch, it=it, total_loss=total_loss)
+                save_checkpoint(checkpoint_path, model,optimizer=optimizer, epoch=epoch, it=it, total_loss=total_loss, best_val=best_val)
 
         average_loss = total_loss / max(it, 1)
 
