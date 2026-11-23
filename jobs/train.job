@@ -3,12 +3,12 @@
 # Replace YOUR_USERNAME with your actual username.
 
 Universe       = vanilla
-Executable     = /nethome/YOUR_USERNAME/projects/nmt-starter/scripts/run.sh
+Executable     = /nethome/YOUR_USERNAME/projects/Transformer/scripts/run.sh
 Arguments      = configs/sample.yaml
 
-Log    = /nethome/YOUR_USERNAME/logs/nmt-starter/run.$(ClusterId).$(Year)_$(Month)_$(Day).log
-Output = /nethome/YOUR_USERNAME/logs/nmt-starter/run.$(ClusterId).$(Year)_$(Month)_$(Day).out
-Error  = /nethome/YOUR_USERNAME/logs/nmt-starter/run.$(ClusterId).$(Year)_$(Month)_$(Day).err
+Log    = /nethome/YOUR_USERNAME/logs/Transformer/run.$(ClusterId).$(Year)_$(Month)_$(Day).log
+Output = /nethome/YOUR_USERNAME/logs/Transformer/run.$(ClusterId).$(Year)_$(Month)_$(Day).out
+Error  = /nethome/YOUR_USERNAME/logs/Transformer/run.$(ClusterId).$(Year)_$(Month)_$(Day).err
 
 request_cpus   = 4
 request_memory = 8GB
