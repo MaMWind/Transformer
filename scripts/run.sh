@@ -7,7 +7,7 @@ set -e
 USERNAME=${USER:-YOUR_USERNAME}
 PROJECT_DIR="/nethome/$USERNAME/projects/Transformer"
 VENV_DIR="/nethome/$USERNAME/virtualenvs/Transformer"
-CONFIG="${1:-configs/sample.yaml}"
+CONFIG="${1:-configs/train.yaml}"
 
 echo "================================================"
 echo "Job started : $(date)"
