@@ -164,7 +164,7 @@ def evaluate(model, cfg, device):
     model.eval()
 
     val_dataset = TinyStoriesDataset(
-        "data/train.npy",
+        "data/val.npy",
         cfg["context_length"],
         samples_per_epoch= cfg.get("val_samples"),
         seed=1234,
