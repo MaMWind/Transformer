@@ -16,5 +16,5 @@ train:
   val_samples: 5
 
 wandb:
-  project: nmt-session01
+  project: Transformer
   name: debug-run

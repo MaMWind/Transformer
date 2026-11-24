@@ -11,6 +11,7 @@ import argparse
 import yaml
 import torch
 import sys
+import wandb
 
 from src.model import build_model
 from src.train import train
@@ -28,6 +29,11 @@ def main():
     args = parser.parse_args()
 
     cfg = load_config(args.config)
+    wandb.init(
+            project=cfg["wandb"]["project"],
+            name=cfg["wandb"]["name"],
+            config=cfg,
+        )
 
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

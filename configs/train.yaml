@@ -14,5 +14,5 @@ train:
   context_length: 1024
 
 wandb:
-  project: nmt-session01
-  name: debug-run
+  project: Transformer
+  name: train-run

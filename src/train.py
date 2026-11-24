@@ -10,6 +10,7 @@ import torch.nn as nn
 from torch.utils.data import IterableDataset, DataLoader
 import os.path
 import signal
+import wandb
 
 
 # Loss function
@@ -151,6 +152,8 @@ def train(model, cfg, device, checkpoint_path=CHECKPOINT_PATH, resume=False):
         )
 
         best_val = validate(model, cfg, device, best_val, label=f"Epoch [{epoch + 1}/{cfg['num_epochs']}]")
+        wandb.log({"epoch": epoch, "train/loss": average_loss})
+        wandb.log({"epoch": epoch, "val/loss": best_val})
 
         save_checkpoint(checkpoint_path, model, optimizer, epoch + 1, 0, 0.0)
     return True
