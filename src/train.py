@@ -72,8 +72,10 @@ def load_checkpoint(path, model, optimizer, device):
 
 
 # Training loop
-def train(model, cfg, device, checkpoint_path=CHECKPOINT_PATH, resume=False):
+def train(model, cfg, device, checkpoint_path=None, resume=False):
     model.to(device)
+
+    checkpoint_path = default_checkpoint_path(cfg)
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg["lr"])
 
