@@ -16,8 +16,11 @@ import wandb
 # Loss function
 criterion = nn.CrossEntropyLoss()
 
-CHECKPOINT_PATH = "checkpoints/last.pt"
-BEST_MODEL_PATH = "checkpoints/best.pt"
+CHECKPOINT_ROOT = "checkpoints"
+
+def default_checkpoint_path(cfg):
+    return os.path.join(CHECKPOINT_ROOT, cfg.get("run_name", "default"), "last.pt")
+
 
 #
 # Pause / resume helper functions

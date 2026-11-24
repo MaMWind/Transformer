@@ -12,6 +12,7 @@ train:
   num_epochs: 10
   max_iter: -1
   context_length: 1024
+  run_name: train
 
 wandb:
   project: Transformer
