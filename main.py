@@ -41,7 +41,7 @@ def main():
     print(f"Model parameters: {model.count_parameters()}")
 
     finished = train(model,cfg["train"], device, resume=True)
-
+    wandb.finish()
     if finished: 
         torch.save(model.state_dict(), "model.pth")
     else:

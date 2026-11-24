@@ -213,7 +213,8 @@ def validate(model, cfg, device, best_val, label):
     print(f"{label} | Val loss: {val_loss:.4f}, Perplexity: {math.exp(val_loss):.2f}")
     if val_loss < best_val:
         best_val = val_loss
-        save_best_model(BEST_MODEL_PATH, model)
-        print(f"New best validation loss, model saved to {BEST_MODEL_PATH}")
+        checkpoint_path = default_checkpoint_path(cfg)
+        save_best_model(checkpoint_path, model)
+        print(f"New best validation loss, model saved to {checkpoint_path}")
     return best_val
     
