@@ -34,7 +34,7 @@ def main():
     model = build_model(cfg["model"]).to(device)
     print(f"Model parameters: {model.count_parameters()}")
 
-    finished = train(model,cfg["train"], device, resume=args.resume)
+    finished = train(model,cfg["train"], device, resume=True)
 
     if finished: 
         torch.save(model.state_dict(), "model.pth")
