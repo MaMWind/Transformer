@@ -21,6 +21,9 @@ CHECKPOINT_ROOT = "checkpoints"
 def default_checkpoint_path(cfg):
     return os.path.join(CHECKPOINT_ROOT, cfg.get("run_name", "default"), "last.pt")
 
+def default_best_path(cfg):
+    return os.path.join(CHECKPOINT_ROOT, cfg.get("run_name", "default"), "best.pt")
+
 
 #
 # Pause / resume helper functions
@@ -213,8 +216,8 @@ def validate(model, cfg, device, best_val, label):
     print(f"{label} | Val loss: {val_loss:.4f}, Perplexity: {math.exp(val_loss):.2f}")
     if val_loss < best_val:
         best_val = val_loss
-        checkpoint_path = default_checkpoint_path(cfg)
-        save_best_model(checkpoint_path, model)
-        print(f"New best validation loss, model saved to {checkpoint_path}")
+        best_path = default_best_path(cfg)
+        save_best_model(best_path, model)
+        print(f"New best validation loss, model saved to {best_path}")
     return best_val
     
